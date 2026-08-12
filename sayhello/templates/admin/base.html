@@ -9,6 +9,9 @@
             <li class="breadcrumb-item active" aria-current="page">Admin</li>
         </ol>
     </nav>
-    <h2 class="mb-4">Message Admin</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Message Admin</h2>
+        <a href="{{ url_for('admin.logout') }}" class="btn btn-secondary btn-sm">Logout</a>
+    </div>
     {% block admin_content %}{% endblock %}
 {% endblock %}

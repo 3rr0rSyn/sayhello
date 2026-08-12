@@ -85,8 +85,8 @@ class SayHelloTestCase(unittest.TestCase):
 
     def test_forge_command(self):
         result = self.runner.invoke(forge)
-        self.assertIn('Created 20 fake messages.', result.output)
-        self.assertEqual(Message.query.count(), 20)
+        self.assertIn('Created 40 fake messages.', result.output)
+        self.assertEqual(Message.query.count(), 40)
 
     def test_forge_command_with_count(self):
         result = self.runner.invoke(forge, ['--count', '50'])
@@ -172,6 +172,43 @@ class AdminTestCase(unittest.TestCase):
         data = response.get_data(as_text=True)
         self.assertIn('Message deleted.', data)
         self.assertEqual(Message.query.count(), 0)
+
+    def test_admin_pagination(self):
+        self.login()
+        for i in range(15):
+            db.session.add(Message(name='User %d' % i, body='Body %d' % i))
+        db.session.commit()
+
+        response = self.client.get('/admin/?page=1')
+        data = response.get_data(as_text=True)
+        self.assertIn('Total: 15 messages', data)
+        self.assertIn('page=2', data)
+        messages_page_1 = Message.query.order_by(Message.timestamp.desc()).limit(10).all()
+        self.assertEqual(len(messages_page_1), 10)
+
+        response = self.client.get('/admin/?page=2')
+        data = response.get_data(as_text=True)
+        self.assertIn('Total: 15 messages', data)
+        messages_page_2 = Message.query.order_by(Message.timestamp.desc()).offset(10).limit(10).all()
+        self.assertEqual(len(messages_page_2), 5)
+
+    def test_admin_search(self):
+        self.login()
+        db.session.add(Message(name='Alice', body='Hello world'))
+        db.session.add(Message(name='Bob', body='Goodbye world'))
+        db.session.add(Message(name='Charlie', body='Nothing here'))
+        db.session.commit()
+
+        response = self.client.get('/admin/?q=world')
+        data = response.get_data(as_text=True)
+        self.assertIn('Alice', data)
+        self.assertIn('Bob', data)
+        self.assertNotIn('Charlie', data)
+
+        response = self.client.get('/admin/?q=Alice')
+        data = response.get_data(as_text=True)
+        self.assertIn('Alice', data)
+        self.assertNotIn('Bob', data)
 
 
 if __name__ == '__main__':

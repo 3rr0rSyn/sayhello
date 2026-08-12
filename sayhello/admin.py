@@ -50,9 +50,25 @@ def logout():
 @admin_bp.route('/')
 @login_required
 def index():
-    """List all messages in admin panel."""
-    messages = Message.query.order_by(Message.timestamp.desc()).all()
-    return render_template('admin/index.html', messages=messages)
+    """List all messages in admin panel with pagination and search."""
+    page = request.args.get('page', 1, type=int)
+    q = request.args.get('q', '', type=str).strip()
+    per_page = 10
+
+    query = Message.query.order_by(Message.timestamp.desc())
+    if q:
+        # Use SQLAlchemy's parameterized ilike to avoid SQL injection.
+        pattern = '%{}%'.format(q)
+        query = query.filter(
+            db.or_(
+                Message.name.ilike(pattern),
+                Message.body.ilike(pattern)
+            )
+        )
+
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    messages = pagination.items
+    return render_template('admin/index.html', messages=messages, pagination=pagination, q=q)
 
 
 @admin_bp.route('/create', methods=['GET', 'POST'])
