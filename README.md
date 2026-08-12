@@ -4,36 +4,52 @@
 
 > Example application for *[Python Web Development with Flask](https://helloflask.com/en/book/1)* (《[Flask Web 开发实战](https://helloflask.com/book/1)》).
 
-Demo: http://sayhello.helloflask.com
+This fork has been updated to run on modern Python (3.11+) and Flask 3.x, and includes a simple admin backend for managing messages.
 
-![Screenshot](https://helloflask.com/screenshots/sayhello.png)
+## Features
+
+- Post and view messages
+- Simple admin backend with CRUD, search and pagination
+- Compatible with Python 3.11 / 3.12 / 3.13
 
 ## Installation
 
-clone:
-```
-$ git clone https://github.com/greyli/sayhello.git
+Clone:
+```bash
+$ git clone https://github.com/3rr0rSyn/sayhello.git
 $ cd sayhello
 ```
-create & activate virtual env then install dependency:
 
-with venv/virtualenv + pip:
-```
-$ python -m venv env  # use `virtualenv env` for Python2, use `python3 ...` for Python3 on Linux & macOS
-$ source env/bin/activate  # use `env\Scripts\activate` on Windows
+Create & activate virtual env then install dependencies:
+
+```bash
+$ python3 -m venv .venv
+$ source .venv/bin/activate
 $ pip install -r requirements.txt
 ```
-or with Pipenv:
-```
-$ pipenv install --dev
-$ pipenv shell
-```
-generate fake data then run:
-```
-$ flask forge
+
+Initialize the database and run:
+
+```bash
+$ flask initdb
 $ flask run
-* Running on http://127.0.0.1:5000/
+ * Running on http://127.0.0.1:5000/
 ```
+
+You can also generate fake data with:
+
+```bash
+$ flask forge
+```
+
+## Admin Backend
+
+Visit `/admin/` and log in with the default password `admin`.  
+**Important:** change the admin password in production by setting the `ADMIN_PASSWORD` environment variable.
+
+## Deployment
+
+For deploying with BT Panel (宝塔面板), see the [宝塔部署.md](宝塔部署.md) guide.
 
 ## License
 

@@ -23,6 +23,10 @@ def internal_server_error_for_test():
 class SayHelloTestCase(unittest.TestCase):
 
     def setUp(self):
+        import os
+        # Make sure the default dev database does not pollute tests.
+        if os.path.exists('data.db'):
+            os.remove('data.db')
         app.config.update(
             TESTING=True,
             WTF_CSRF_ENABLED=False,
@@ -36,10 +40,14 @@ class SayHelloTestCase(unittest.TestCase):
         self.runner = app.test_cli_runner()
 
     def tearDown(self):
+        import os
         db.session.remove()
         db.drop_all()
         db.engine.dispose()
         self.app_context.pop()
+        # Remove any leftover on-disk test database so the next run starts clean.
+        if os.path.exists('data.db'):
+            os.remove('data.db')
 
     def test_app_exist(self):
         self.assertFalse(app is None)
@@ -106,6 +114,10 @@ class SayHelloTestCase(unittest.TestCase):
 class AdminTestCase(unittest.TestCase):
 
     def setUp(self):
+        import os
+        # Make sure the default dev database does not pollute tests.
+        if os.path.exists('data.db'):
+            os.remove('data.db')
         app.config.update(
             TESTING=True,
             WTF_CSRF_ENABLED=False,
@@ -118,10 +130,14 @@ class AdminTestCase(unittest.TestCase):
         self.client = app.test_client()
 
     def tearDown(self):
+        import os
         db.session.remove()
         db.drop_all()
         db.engine.dispose()
         self.app_context.pop()
+        # Remove any leftover on-disk test database so the next run starts clean.
+        if os.path.exists('data.db'):
+            os.remove('data.db')
 
     def login(self):
         return self.client.post('/admin/login', data=dict(password='testpass'), follow_redirects=True)
