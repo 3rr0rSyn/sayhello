@@ -1,0 +1,8 @@
+{% extends 'admin/base.html' %}
+{% from 'bootstrap4/form.html' import render_form %}
+
+{% block admin_content %}
+    <h3 class="mb-4">{% if message %}Edit Message #{{ message.id }}{% else %}New Message{% endif %}</h3>
+    {{ render_form(form, action=request.full_path) }}
+    <a href="{{ url_for('admin.index') }}" class="btn btn-link">Back</a>
+{% endblock %}

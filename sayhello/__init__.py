@@ -22,3 +22,6 @@ bootstrap = Bootstrap4(app)
 moment = Moment(app)
 
 from sayhello import views, errors, commands
+from sayhello.admin import admin_bp
+
+app.register_blueprint(admin_bp)

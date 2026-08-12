@@ -27,7 +27,8 @@
         {% block footer %}
             <small> &copy; 2018 <a href="http://greyli.com" title="Written by Grey Li">Grey Li</a> /
                 <a href="https://github.com/greyli/sayhello" title="Fork me on GitHub">GitHub</a> /
-                <a href="http://helloflask.com" title="A HelloFlask project">HelloFlask</a>
+                <a href="http://helloflask.com" title="A HelloFlask project">HelloFlask</a> /
+                <a href="{{ url_for('admin.index') }}" title="Admin">Admin</a>
             </small>
             <p><a id="bottom" href="#" title="Go Top">&uarr;</a></p>
         {% endblock %}

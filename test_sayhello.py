@@ -14,6 +14,12 @@ from sayhello.models import Message
 from sayhello.commands import forge, initdb
 
 
+# Register a test-only route before the app handles its first request.
+@app.route('/500')
+def internal_server_error_for_test():
+    abort(500)
+
+
 class SayHelloTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -22,12 +28,6 @@ class SayHelloTestCase(unittest.TestCase):
             WTF_CSRF_ENABLED=False,
             SQLALCHEMY_DATABASE_URI='sqlite:///:memory:'
         )
-
-        # Register a test-only route before the app handles its first request.
-        if not any(rule.rule == '/500' for rule in app.url_map.iter_rules()):
-            @app.route('/500')
-            def internal_server_error_for_test():
-                abort(500)
 
         self.app_context = app.app_context()
         self.app_context.push()
@@ -101,6 +101,77 @@ class SayHelloTestCase(unittest.TestCase):
         result = self.runner.invoke(initdb, ['--drop'], input='y\n')
         self.assertIn('This operation will delete the database, do you want to continue?', result.output)
         self.assertIn('Drop tables.', result.output)
+
+
+class AdminTestCase(unittest.TestCase):
+
+    def setUp(self):
+        app.config.update(
+            TESTING=True,
+            WTF_CSRF_ENABLED=False,
+            SQLALCHEMY_DATABASE_URI='sqlite:///:memory:',
+            ADMIN_PASSWORD='testpass'
+        )
+        self.app_context = app.app_context()
+        self.app_context.push()
+        db.create_all()
+        self.client = app.test_client()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        db.engine.dispose()
+        self.app_context.pop()
+
+    def login(self):
+        return self.client.post('/admin/login', data=dict(password='testpass'), follow_redirects=True)
+
+    def test_admin_login_required(self):
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/admin/login', response.location)
+
+    def test_admin_login(self):
+        response = self.login()
+        self.assertEqual(response.status_code, 200)
+        data = response.get_data(as_text=True)
+        self.assertIn('Message Admin', data)
+
+    def test_admin_login_invalid(self):
+        response = self.client.post('/admin/login', data=dict(password='wrong'), follow_redirects=True)
+        data = response.get_data(as_text=True)
+        self.assertIn('Invalid password.', data)
+
+    def test_admin_create_message(self):
+        self.login()
+        response = self.client.post('/admin/create', data=dict(name='Admin', body='Created in admin.'), follow_redirects=True)
+        data = response.get_data(as_text=True)
+        self.assertIn('Message created.', data)
+        self.assertIn('Created in admin.', data)
+        self.assertEqual(Message.query.count(), 1)
+
+    def test_admin_edit_message(self):
+        self.login()
+        message = Message(name='Old', body='Old body')
+        db.session.add(message)
+        db.session.commit()
+
+        response = self.client.post('/admin/edit/1', data=dict(name='New', body='New body.'), follow_redirects=True)
+        data = response.get_data(as_text=True)
+        self.assertIn('Message updated.', data)
+        self.assertIn('New body.', data)
+
+    def test_admin_delete_message(self):
+        self.login()
+        message = Message(name='ToDelete', body='Delete me.')
+        db.session.add(message)
+        db.session.commit()
+        self.assertEqual(Message.query.count(), 1)
+
+        response = self.client.post('/admin/delete/1', follow_redirects=True)
+        data = response.get_data(as_text=True)
+        self.assertIn('Message deleted.', data)
+        self.assertEqual(Message.query.count(), 0)
 
 
 if __name__ == '__main__':
