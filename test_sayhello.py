@@ -22,6 +22,15 @@ class SayHelloTestCase(unittest.TestCase):
             WTF_CSRF_ENABLED=False,
             SQLALCHEMY_DATABASE_URI='sqlite:///:memory:'
         )
+
+        # Register a test-only route before the app handles its first request.
+        if not any(rule.rule == '/500' for rule in app.url_map.iter_rules()):
+            @app.route('/500')
+            def internal_server_error_for_test():
+                abort(500)
+
+        self.app_context = app.app_context()
+        self.app_context.push()
         db.create_all()
         self.client = app.test_client()
         self.runner = app.test_cli_runner()
@@ -29,6 +38,8 @@ class SayHelloTestCase(unittest.TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+        db.engine.dispose()
+        self.app_context.pop()
 
     def test_app_exist(self):
         self.assertFalse(app is None)
@@ -44,11 +55,6 @@ class SayHelloTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_500_page(self):
-        # create route to abort the request with the 500 Error
-        @app.route('/500')
-        def internal_server_error_for_test():
-            abort(500)
-
         response = self.client.get('/500')
         data = response.get_data(as_text=True)
         self.assertEqual(response.status_code, 500)
