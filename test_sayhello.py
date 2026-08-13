@@ -58,16 +58,16 @@ class SayHelloTestCase(unittest.TestCase):
     def test_404_page(self):
         response = self.client.get('/nothing')
         data = response.get_data(as_text=True)
-        self.assertIn('404 Error', data)
-        self.assertIn('Go Back', data)
+        self.assertIn('404 错误', data)
+        self.assertIn('返回首页', data)
         self.assertEqual(response.status_code, 404)
 
     def test_500_page(self):
         response = self.client.get('/500')
         data = response.get_data(as_text=True)
         self.assertEqual(response.status_code, 500)
-        self.assertIn('500 Error', data)
-        self.assertIn('Go Back', data)
+        self.assertIn('500 错误', data)
+        self.assertIn('返回首页', data)
 
     def test_index_page(self):
         response = self.client.get('/')
@@ -80,7 +80,7 @@ class SayHelloTestCase(unittest.TestCase):
             body='Hello, world.'
         ), follow_redirects=True)
         data = response.get_data(as_text=True)
-        self.assertIn('Your message have been sent to the world!', data)
+        self.assertIn('你的留言已发送给全世界！', data)
         self.assertIn('Hello, world.', data)
 
     def test_form_validation(self):
@@ -89,26 +89,26 @@ class SayHelloTestCase(unittest.TestCase):
             body='Hello, world.'
         ), follow_redirects=True)
         data = response.get_data(as_text=True)
-        self.assertIn('This field is required.', data)
+        self.assertIn('该字段为必填项', data)
 
     def test_forge_command(self):
         result = self.runner.invoke(forge)
-        self.assertIn('Created 40 fake messages.', result.output)
+        self.assertIn('已生成 40 条测试留言。', result.output)
         self.assertEqual(Message.query.count(), 40)
 
     def test_forge_command_with_count(self):
         result = self.runner.invoke(forge, ['--count', '50'])
-        self.assertIn('Created 50 fake messages.', result.output)
+        self.assertIn('已生成 50 条测试留言。', result.output)
         self.assertEqual(Message.query.count(), 50)
 
     def test_initdb_command(self):
         result = self.runner.invoke(initdb)
-        self.assertIn('Initialized database.', result.output)
+        self.assertIn('数据库已初始化。', result.output)
 
     def test_initdb_command_with_drop(self):
         result = self.runner.invoke(initdb, ['--drop'], input='y\n')
-        self.assertIn('This operation will delete the database, do you want to continue?', result.output)
-        self.assertIn('Drop tables.', result.output)
+        self.assertIn('此操作将删除数据库，是否继续？', result.output)
+        self.assertIn('已删除表。', result.output)
 
 
 class AdminTestCase(unittest.TestCase):
@@ -151,18 +151,18 @@ class AdminTestCase(unittest.TestCase):
         response = self.login()
         self.assertEqual(response.status_code, 200)
         data = response.get_data(as_text=True)
-        self.assertIn('Message Admin', data)
+        self.assertIn('留言管理', data)
 
     def test_admin_login_invalid(self):
         response = self.client.post('/admin/login', data=dict(password='wrong'), follow_redirects=True)
         data = response.get_data(as_text=True)
-        self.assertIn('Invalid password.', data)
+        self.assertIn('密码错误。', data)
 
     def test_admin_create_message(self):
         self.login()
         response = self.client.post('/admin/create', data=dict(name='Admin', body='Created in admin.'), follow_redirects=True)
         data = response.get_data(as_text=True)
-        self.assertIn('Message created.', data)
+        self.assertIn('留言已创建。', data)
         self.assertIn('Created in admin.', data)
         self.assertEqual(Message.query.count(), 1)
 
@@ -174,7 +174,7 @@ class AdminTestCase(unittest.TestCase):
 
         response = self.client.post('/admin/edit/1', data=dict(name='New', body='New body.'), follow_redirects=True)
         data = response.get_data(as_text=True)
-        self.assertIn('Message updated.', data)
+        self.assertIn('留言已更新。', data)
         self.assertIn('New body.', data)
 
     def test_admin_delete_message(self):
@@ -186,7 +186,7 @@ class AdminTestCase(unittest.TestCase):
 
         response = self.client.post('/admin/delete/1', follow_redirects=True)
         data = response.get_data(as_text=True)
-        self.assertIn('Message deleted.', data)
+        self.assertIn('留言已删除。', data)
         self.assertEqual(Message.query.count(), 0)
 
     def test_admin_pagination(self):
@@ -197,14 +197,14 @@ class AdminTestCase(unittest.TestCase):
 
         response = self.client.get('/admin/?page=1')
         data = response.get_data(as_text=True)
-        self.assertIn('Total: 15 messages', data)
+        self.assertIn('共 15 条留言', data)
         self.assertIn('page=2', data)
         messages_page_1 = Message.query.order_by(Message.timestamp.desc()).limit(10).all()
         self.assertEqual(len(messages_page_1), 10)
 
         response = self.client.get('/admin/?page=2')
         data = response.get_data(as_text=True)
-        self.assertIn('Total: 15 messages', data)
+        self.assertIn('共 15 条留言', data)
         messages_page_2 = Message.query.order_by(Message.timestamp.desc()).offset(10).limit(10).all()
         self.assertEqual(len(messages_page_2), 5)
 

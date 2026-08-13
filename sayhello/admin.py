@@ -35,7 +35,7 @@ def login():
             session['admin_logged_in'] = True
             next_url = request.args.get('next') or url_for('admin.index')
             return redirect(next_url)
-        flash('Invalid password.')
+        flash('密码错误。')
 
     return render_template('admin/login.html', form=form)
 
@@ -80,7 +80,7 @@ def create():
         message = Message(name=form.name.data, body=form.body.data)
         db.session.add(message)
         db.session.commit()
-        flash('Message created.')
+        flash('留言已创建。')
         return redirect(url_for('admin.index'))
     return render_template('admin/edit.html', form=form, message=None)
 
@@ -102,7 +102,7 @@ def edit(id):
     if form.validate_on_submit():
         form.populate_obj(message)
         db.session.commit()
-        flash('Message updated.')
+        flash('留言已更新。')
         return redirect(url_for('admin.index'))
     return render_template('admin/edit.html', form=form, message=message)
 
@@ -114,5 +114,5 @@ def delete(id):
     message = _get_message_or_404(id)
     db.session.delete(message)
     db.session.commit()
-    flash('Message deleted.')
+    flash('留言已删除。')
     return redirect(url_for('admin.index'))

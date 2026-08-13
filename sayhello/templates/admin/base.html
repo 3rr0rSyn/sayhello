@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
-{% block title %}Admin - Say Hello{% endblock %}
+{% block title %}管理后台 - Say Hello{% endblock %}
 
 {% block content %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Admin</li>
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">首页</a></li>
+            <li class="breadcrumb-item active" aria-current="page">后台管理</li>
         </ol>
     </nav>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Message Admin</h2>
-        <a href="{{ url_for('admin.logout') }}" class="btn btn-secondary btn-sm">Logout</a>
+        <h2 class="mb-0">留言管理</h2>
+        <a href="{{ url_for('admin.logout') }}" class="btn btn-secondary btn-sm">退出登录</a>
     </div>
     {% block admin_content %}{% endblock %}
 {% endblock %}

@@ -4,17 +4,17 @@
 
 {% block admin_content %}
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <p class="text-muted mb-0">Total: {{ pagination.total }} messages</p>
-        <a href="{{ url_for('admin.create') }}" class="btn btn-primary btn-sm">New Message</a>
+        <p class="text-muted mb-0">共 {{ pagination.total }} 条留言</p>
+        <a href="{{ url_for('admin.create') }}" class="btn btn-primary btn-sm">新建留言</a>
     </div>
 
     <form method="get" action="{{ url_for('admin.index') }}" class="form-inline mb-3">
         <div class="input-group w-100">
-            <input type="text" class="form-control" name="q" value="{{ q }}" placeholder="Search by name or message...">
+            <input type="text" class="form-control" name="q" value="{{ q }}" placeholder="按姓名或留言内容搜索...">
             <div class="input-group-append">
-                <button type="submit" class="btn btn-outline-primary">Search</button>
+                <button type="submit" class="btn btn-outline-primary">搜索</button>
                 {% if q %}
-                    <a href="{{ url_for('admin.index') }}" class="btn btn-outline-secondary">Clear</a>
+                    <a href="{{ url_for('admin.index') }}" class="btn btn-outline-secondary">清空</a>
                 {% endif %}
             </div>
         </div>
@@ -25,10 +25,10 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Name</th>
-                    <th>Message</th>
-                    <th>Time</th>
-                    <th>Actions</th>
+                    <th>姓名</th>
+                    <th>留言内容</th>
+                    <th>时间</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,18 +39,18 @@
                         <td>{{ message.body }}</td>
                         <td>{{ moment(message.timestamp).format('YYYY-MM-DD HH:mm') }}</td>
                         <td>
-                            <a href="{{ url_for('admin.edit', id=message.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                            <form method="post" action="{{ url_for('admin.delete', id=message.id) }}" class="d-inline" onsubmit="return confirm('Are you sure?')">
+                            <a href="{{ url_for('admin.edit', id=message.id) }}" class="btn btn-sm btn-outline-primary">编辑</a>
+                            <form method="post" action="{{ url_for('admin.delete', id=message.id) }}" class="d-inline" onsubmit="return confirm('确定要删除这条留言吗？')">
                                 {% if config.WTF_CSRF_ENABLED %}
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 {% endif %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">删除</button>
                             </form>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="5" class="text-center text-muted">No messages yet.</td>
+                        <td colspan="5" class="text-center text-muted">暂无留言。</td>
                     </tr>
                 {% endfor %}
             </tbody>

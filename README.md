@@ -2,25 +2,25 @@
 
 *Say hello to the world.*
 
-> Example application for *[Python Web Development with Flask](https://helloflask.com/en/book/1)* (《[Flask Web 开发实战](https://helloflask.com/book/1)》).
+> 基于《[Flask Web 开发实战](https://helloflask.com/book/1)》的示例应用。
 
-This fork has been updated to run on modern Python (3.11+) and Flask 3.x, and includes a simple admin backend for managing messages.
+本分支已升级为支持现代 Python（3.11+）和 Flask 3.x，并带有简易留言管理后台。
 
-## Features
+## 功能
 
-- Post and view messages
-- Simple admin backend with CRUD, search and pagination
-- Compatible with Python 3.11 / 3.12 / 3.13
+- 发布与浏览留言
+- 管理后台：增删改查、搜索、分页
+- 兼容 Python 3.11 / 3.12 / 3.13
 
-## Installation
+## 安装
 
-Clone:
+克隆项目：
 ```bash
 $ git clone https://github.com/3rr0rSyn/sayhello.git
 $ cd sayhello
 ```
 
-Create & activate virtual env then install dependencies:
+创建虚拟环境并安装依赖：
 
 ```bash
 $ python3 -m venv .venv
@@ -28,7 +28,7 @@ $ source .venv/bin/activate
 $ pip install -r requirements.txt
 ```
 
-Initialize the database and run:
+初始化数据库并运行：
 
 ```bash
 $ flask initdb
@@ -36,22 +36,21 @@ $ flask run
  * Running on http://127.0.0.1:5000/
 ```
 
-You can also generate fake data with:
+也可以生成测试数据：
 
 ```bash
 $ flask forge
 ```
 
-## Admin Backend
+## 管理后台
 
-Visit `/admin/` and log in with the default password `admin`.  
-**Important:** change the admin password in production by setting the `ADMIN_PASSWORD` environment variable.
+访问 `/admin/`，默认密码为 `admin`。  
+**注意：** 生产环境请务必通过环境变量 `ADMIN_PASSWORD` 修改默认密码。
 
-## Deployment
+## 部署
 
-For deploying with BT Panel (宝塔面板), see the [宝塔部署.md](宝塔部署.md) guide.
+使用宝塔面板部署请参考 [宝塔部署.md](宝塔部署.md)。
 
-## License
+## 开源协议
 
-This project is licensed under the MIT License (see the
-[LICENSE](LICENSE) file for details).
+本项目基于 MIT 协议开源，详见 [LICENSE](LICENSE) 文件。

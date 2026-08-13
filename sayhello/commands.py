@@ -12,19 +12,19 @@ from sayhello.models import Message
 
 
 @app.cli.command()
-@click.option('--drop', is_flag=True, help='Create after drop.')
+@click.option('--drop', is_flag=True, help='先删除再创建。')
 def initdb(drop):
     """Initialize the database."""
     if drop:
-        click.confirm('This operation will delete the database, do you want to continue?', abort=True)
+        click.confirm('此操作将删除数据库，是否继续？', abort=True)
         db.drop_all()
-        click.echo('Drop tables.')
+        click.echo('已删除表。')
     db.create_all()
-    click.echo('Initialized database.')
+    click.echo('数据库已初始化。')
 
 
 @app.cli.command()
-@click.option('--count', default=40, help='Quantity of messages, default is 40.')
+@click.option('--count', default=40, help='留言数量，默认 40。')
 def forge(count):
     """Generate fake messages."""
     from faker import Faker
@@ -33,7 +33,7 @@ def forge(count):
     db.create_all()
 
     fake = Faker()
-    click.echo('Working...')
+    click.echo('生成中...')
 
     for i in range(count):
         message = Message(
@@ -44,4 +44,4 @@ def forge(count):
         db.session.add(message)
 
     db.session.commit()
-    click.echo('Created %d fake messages.' % count)
+    click.echo('已生成 %d 条测试留言。' % count)

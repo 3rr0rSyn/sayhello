@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -15,6 +15,7 @@
             <a href="{{ url_for('index') }}" class="text-success"><strong>Say Hello</strong></a>
             <small class="text-muted sub-title">to the world</small>
         </h1>
+        <h2 class="text-center text-success mt-2"><a href="{{ url_for('index') }}" class="text-success">留言板</a></h2>
     </header>
     {% for message in get_flashed_messages() %}
         <div class="alert alert-info">
@@ -25,10 +26,10 @@
     {% block content %}{% endblock %}
     <footer class="text-center">
         {% block footer %}
-            <small> &copy; 2018 <a href="http://greyli.com" title="Written by Grey Li">Grey Li</a> /
+            <small> &copy; 2026 <a href="http://greyli.com" title="Written by Grey Li">Grey Li</a> /
                 <a href="https://github.com/greyli/sayhello" title="Fork me on GitHub">GitHub</a> /
                 <a href="http://helloflask.com" title="A HelloFlask project">HelloFlask</a> /
-                <a href="{{ url_for('admin.index') }}" title="Admin">Admin</a>
+                <a href="{{ url_for('admin.index') }}" title="管理后台">管理后台</a>
             </small>
             <p><a id="bottom" href="#" title="Go Top">&uarr;</a></p>
         {% endblock %}
