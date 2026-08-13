@@ -25,3 +25,12 @@ from sayhello import views, errors, commands
 from sayhello.admin import admin_bp
 
 app.register_blueprint(admin_bp)
+
+
+def _create_tables():
+    """Auto-create tables on the first request if they don't exist yet."""
+    db.create_all()
+    app.before_request_funcs[None].remove(_create_tables)
+
+
+app.before_request(_create_tables)

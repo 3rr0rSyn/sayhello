@@ -28,12 +28,17 @@ $ source .venv/bin/activate
 $ pip install -r requirements.txt
 ```
 
-初始化数据库并运行：
+运行（首次访问时会自动初始化数据库表）：
+
+```bash
+$ flask run
+ * Running on http://127.0.0.1:5000/
+```
+
+也可以手动初始化数据库：
 
 ```bash
 $ flask initdb
-$ flask run
- * Running on http://127.0.0.1:5000/
 ```
 
 也可以生成测试数据：
